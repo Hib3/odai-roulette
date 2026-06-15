@@ -22,6 +22,8 @@ body {
   font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
   color: var(--ink);
   background:
+    linear-gradient(rgba(238, 244, 248, .2), rgba(238, 244, 248, .2)),
+    url("assets/metal-pachinko-bg.png") center / cover fixed no-repeat,
     radial-gradient(circle at 22% 8%, rgba(255, 247, 177, .9), transparent 18%),
     radial-gradient(circle at 84% 12%, rgba(0, 183, 168, .28), transparent 24%),
     repeating-radial-gradient(circle at 0 0, rgba(0, 0, 0, .28) 0 2px, transparent 3px 12px),
@@ -154,6 +156,8 @@ h1 {
   border: 1px solid rgba(255, 255, 255, .7);
   border-radius: 8px;
   background:
+    linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)),
+    url("assets/metal-pachinko-bg.png") center / cover no-repeat,
     radial-gradient(circle at 30% 15%, rgba(255, 255, 255, .96), transparent 26%),
     repeating-radial-gradient(circle at 0 0, rgba(0, 0, 0, .34) 0 2px, transparent 3px 15px),
     linear-gradient(145deg, #f7f9fb 0%, #a9b1bd 32%, #f7f9fc 48%, #747d8b 100%);
