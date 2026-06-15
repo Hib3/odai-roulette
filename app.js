@@ -276,6 +276,8 @@ let currentTopic = null;
 let spinning = false;
 let soundEnabled = true;
 let audioContext = null;
+let flashPower = 0;
+let particles = [];
 
 topicCount.textContent = String(topics.length);
 
@@ -302,6 +304,14 @@ function beep(frequency, duration, gain = 0.06, type = "sine") {
   oscillator.stop(audio.currentTime + duration + 0.02);
 }
 
+function fanfare() {
+  beep(392, 0.09, 0.09, "triangle");
+  setTimeout(() => beep(523.25, 0.09, 0.09, "triangle"), 70);
+  setTimeout(() => beep(659.25, 0.11, 0.1, "triangle"), 140);
+  setTimeout(() => beep(783.99, 0.16, 0.1, "triangle"), 220);
+  setTimeout(() => beep(1046.5, 0.18, 0.075, "sine"), 300);
+}
+
 function wrapIndex(index) {
   return ((index % reelTopics.length) + reelTopics.length) % reelTopics.length;
 }
@@ -320,6 +330,34 @@ function fitText(text, maxWidth, baseSize) {
   return size;
 }
 
+function spawnParticles(count) {
+  particles = Array.from({ length: count }, () => ({
+    x: canvas.width * (0.16 + Math.random() * 0.72),
+    y: canvas.height * (0.18 + Math.random() * 0.64),
+    vx: (Math.random() - 0.5) * 18,
+    vy: (Math.random() - 0.5) * 14 - 4,
+    size: 5 + Math.random() * 12,
+    life: 1,
+    color: palette[Math.floor(Math.random() * palette.length)]
+  }));
+}
+
+function drawParticles() {
+  for (const particle of particles) {
+    ctx.globalAlpha = Math.max(particle.life, 0);
+    ctx.fillStyle = particle.color;
+    ctx.beginPath();
+    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+    ctx.fill();
+    particle.x += particle.vx;
+    particle.y += particle.vy;
+    particle.vy += 0.24;
+    particle.life -= 0.022;
+  }
+  ctx.globalAlpha = 1;
+  particles = particles.filter((particle) => particle.life > 0);
+}
+
 function drawSlot(position = reelPosition) {
   const { width, height } = canvas;
   const centerX = width / 2;
@@ -330,13 +368,31 @@ function drawSlot(position = reelPosition) {
 
   ctx.clearRect(0, 0, width, height);
 
-  const background = ctx.createLinearGradient(0, 0, 0, height);
-  background.addColorStop(0, "#25313d");
-  background.addColorStop(0.18, "#f7f0df");
+  const background = ctx.createLinearGradient(0, 0, width, height);
+  background.addColorStop(0, "#111721");
+  background.addColorStop(0.18, "#e8edf3");
+  background.addColorStop(0.34, "#8f98a7");
   background.addColorStop(0.5, "#fffdf7");
-  background.addColorStop(0.82, "#e5ebe5");
-  background.addColorStop(1, "#18232d");
+  background.addColorStop(0.66, "#aeb6c3");
+  background.addColorStop(0.82, "#f3f6f8");
+  background.addColorStop(1, "#10151f");
   ctx.fillStyle = background;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.fillStyle = "rgba(0, 0, 0, .18)";
+  for (let y = 24; y < height; y += 22) {
+    for (let x = 28 + ((y / 22) % 2) * 10; x < width; x += 22) {
+      ctx.beginPath();
+      ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  const tunnel = ctx.createRadialGradient(centerX, centerY, height * 0.08, centerX, centerY, height * 0.68);
+  tunnel.addColorStop(0, "rgba(255, 255, 255, .48)");
+  tunnel.addColorStop(0.46, "rgba(255, 255, 255, .04)");
+  tunnel.addColorStop(1, "rgba(0, 0, 0, .5)");
+  ctx.fillStyle = tunnel;
   ctx.fillRect(0, 0, width, height);
 
   ctx.save();
@@ -345,52 +401,89 @@ function drawSlot(position = reelPosition) {
     const distance = row - drift;
     const y = distance * rowHeight;
     const depth = Math.min(Math.abs(distance) / 5, 1);
-    const scale = 1 - depth * 0.34;
-    const alpha = 1 - depth * 0.66;
+    const scale = 1 - depth * 0.38;
+    const alpha = 1 - depth * 0.58;
     const topic = reelTopics[wrapIndex(base + row)];
-    const cardWidth = width * (0.82 - depth * 0.22);
-    const cardHeight = rowHeight * (0.78 - depth * 0.14);
-    const x = -cardWidth / 2 + depth * 52;
+    const cardWidth = width * (0.78 - depth * 0.24);
+    const cardHeight = rowHeight * (0.8 - depth * 0.12);
+    const x = -cardWidth / 2 + depth * 70;
     const radius = 8;
 
     ctx.save();
     ctx.translate(0, y);
     ctx.scale(scale, scale);
     ctx.globalAlpha = alpha;
-    ctx.fillStyle = row === 0 ? "#fffdf7" : palette[wrapIndex(base + row) % palette.length];
-    ctx.strokeStyle = row === 0 ? "#e94f37" : "rgba(255, 255, 255, .72)";
-    ctx.lineWidth = row === 0 ? 5 : 2;
+    const cardGradient = ctx.createLinearGradient(x, -cardHeight / 2, x + cardWidth, cardHeight / 2);
+    cardGradient.addColorStop(0, row === 0 ? "#fff5c7" : palette[wrapIndex(base + row) % palette.length]);
+    cardGradient.addColorStop(0.45, row === 0 ? "#ffffff" : "rgba(255,255,255,.9)");
+    cardGradient.addColorStop(1, row === 0 ? "#ffd64f" : palette[wrapIndex(base + row + 3) % palette.length]);
+    ctx.fillStyle = cardGradient;
+    ctx.strokeStyle = row === 0 ? "#ff2d24" : "rgba(255, 255, 255, .84)";
+    ctx.lineWidth = row === 0 ? 6 : 2;
+    ctx.shadowColor = row === 0 ? "rgba(255, 45, 36, .82)" : "rgba(0, 0, 0, .2)";
+    ctx.shadowBlur = row === 0 ? 28 : 8;
     ctx.beginPath();
     ctx.roundRect(x, -cardHeight / 2, cardWidth, cardHeight, radius);
     ctx.fill();
     ctx.stroke();
+    ctx.shadowBlur = 0;
 
-    ctx.fillStyle = row === 0 ? "#17202a" : "#fff";
+    ctx.fillStyle = row === 0 ? "#090d14" : "#23303d";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const maxText = cardWidth - 44;
     const fontSize = fitText(topic.title, maxText, row === 0 ? 42 : 28);
     ctx.font = `900 ${fontSize}px Yu Gothic, Meiryo, sans-serif`;
+    ctx.shadowColor = row === 0 ? "rgba(255,255,255,.95)" : "rgba(255,255,255,.86)";
+    ctx.shadowBlur = row === 0 ? 1 : 2;
     ctx.fillText(topic.title, 0, 0);
     ctx.restore();
   }
   ctx.restore();
 
-  ctx.fillStyle = "rgba(233, 79, 55, .18)";
+  ctx.shadowColor = "rgba(255, 45, 36, .9)";
+  ctx.shadowBlur = 18;
+  ctx.fillStyle = "rgba(255, 45, 36, .2)";
   ctx.fillRect(0, centerY - rowHeight * .45, width, rowHeight * .9);
-  ctx.strokeStyle = "#e94f37";
-  ctx.lineWidth = 4;
+  ctx.strokeStyle = "#ff2d24";
+  ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.moveTo(0, centerY);
   ctx.lineTo(width, centerY);
   ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  for (let i = 0; i < 18; i += 1) {
+    const bulbX = 34 + i * ((width - 68) / 17);
+    const phase = (i + Math.floor(position * 3)) % 3;
+    ctx.fillStyle = phase === 0 ? "#fff8a4" : phase === 1 ? "#ff2d24" : "#37e6ff";
+    ctx.shadowColor = ctx.fillStyle;
+    ctx.shadowBlur = 18;
+    ctx.beginPath();
+    ctx.arc(bulbX, 34, 7, 0, Math.PI * 2);
+    ctx.arc(bulbX, height - 34, 7, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.shadowBlur = 0;
 
   const shine = ctx.createLinearGradient(0, 0, width, 0);
-  shine.addColorStop(0, "rgba(255, 255, 255, .08)");
-  shine.addColorStop(0.5, "rgba(255, 255, 255, .34)");
+  shine.addColorStop(0, "rgba(255, 255, 255, .04)");
+  shine.addColorStop(0.42, "rgba(255, 255, 255, .26)");
+  shine.addColorStop(0.52, "rgba(255, 255, 255, .08)");
+  shine.addColorStop(0.7, "rgba(255, 255, 255, .18)");
   shine.addColorStop(1, "rgba(255, 255, 255, .06)");
   ctx.fillStyle = shine;
   ctx.fillRect(0, 0, width, height);
+
+  if (flashPower > 0) {
+    ctx.globalAlpha = flashPower;
+    ctx.fillStyle = "#fff7a6";
+    ctx.fillRect(0, 0, width, height);
+    ctx.globalAlpha = 1;
+    flashPower *= 0.88;
+  }
+
+  drawParticles();
 }
 
 function shuffleTopics() {
@@ -419,6 +512,9 @@ function spin() {
   if (spinning) return;
   spinning = true;
   spinButton.disabled = true;
+  document.body.classList.add("jackpot");
+  flashPower = 0.95;
+  spawnParticles(120);
   result.textContent = "抽選中...";
   resultMeta.textContent = "中央の赤いラインが指したお題で止まります。";
 
@@ -432,7 +528,7 @@ function spin() {
   const startedAt = performance.now();
   let lastTick = Math.round(start);
 
-  beep(440, 0.12, 0.08, "triangle");
+  fanfare();
 
   function frame(now) {
     const progress = Math.min((now - startedAt) / duration, 1);
@@ -443,7 +539,8 @@ function spin() {
     const tick = Math.round(reelPosition);
     if (tick !== lastTick && progress < 0.96) {
       lastTick = tick;
-      beep(700 + (tick % 8) * 25, 0.025, 0.035, "square");
+      beep(760 + (tick % 10) * 38, 0.026, 0.045, "square");
+      if (tick % 8 === 0) spawnParticles(16);
     }
 
     if (progress < 1) {
@@ -457,9 +554,10 @@ function spin() {
     spinning = false;
     spinButton.disabled = false;
     setResult(selected);
-    beep(523.25, 0.1, 0.08, "triangle");
-    setTimeout(() => beep(659.25, 0.12, 0.08, "triangle"), 110);
-    setTimeout(() => beep(783.99, 0.18, 0.08, "triangle"), 230);
+    flashPower = 0.8;
+    spawnParticles(160);
+    fanfare();
+    setTimeout(() => document.body.classList.remove("jackpot"), 1600);
   }
 
   requestAnimationFrame(frame);
