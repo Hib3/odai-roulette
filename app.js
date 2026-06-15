@@ -148,11 +148,11 @@ SFといえば
 私のかばん
 花火2014
 海か？ 山か？
-テスト
-2014、夏の予定
+テストの思い出
+2014年、夏の予定
 アイドル
 サッカー
-雨あめ降れふれ
+雨の日の楽しみ
 アイス
 布団派？ ベッド派？
 お母さん2014
@@ -180,16 +180,16 @@ SFといえば
 秋の準備
 2020年の私
 姉妹・兄弟
-2013、夏の思い出
+2013年、夏の思い出
 私の日本一
 海
 宿題
 名前
 夏に読みたい1冊
-2013 日本の夏
+2013年、日本の夏
 2013年、夏の予定
 私のお父さん
-私は〇〇王！
+私は〇〇が得意です
 梅雨
 スマホ使ってる？
 こんな“ひみつ道具”がほしい！
@@ -213,11 +213,11 @@ const originalTopicText = `
 スースーするもの
 旅の計画
 春に食べたいもの
-シーズン開幕
+新しい季節に始めたいこと
 ケガの思い出
 おやつ
-新！
-スッキリ！
+新しく始めたこと
+最近スッキリしたこと
 雨の日の過ごし方
 最近の小さな発見
 わたしの作業机
@@ -269,12 +269,13 @@ const resultMeta = document.getElementById("result-meta");
 const topicCount = document.getElementById("topic-count");
 
 const palette = ["#e94f37", "#2b8c83", "#f6b83f", "#395b9d", "#8f5b9d", "#4d9f6f", "#d96c2c", "#2f7f9e"];
-let currentRotation = 0;
+const volumeBoost = 2.5;
+let reelTopics = [...topics];
+let reelPosition = 0;
 let currentTopic = null;
 let spinning = false;
 let soundEnabled = true;
 let audioContext = null;
-let wheelTopics = [];
 
 topicCount.textContent = String(topics.length);
 
@@ -290,65 +291,116 @@ function beep(frequency, duration, gain = 0.06, type = "sine") {
   const audio = getAudioContext();
   const oscillator = audio.createOscillator();
   const volume = audio.createGain();
+  const boostedGain = Math.min(gain * volumeBoost, 0.32);
   oscillator.type = type;
   oscillator.frequency.value = frequency;
   volume.gain.setValueAtTime(0.0001, audio.currentTime);
-  volume.gain.exponentialRampToValueAtTime(gain, audio.currentTime + 0.01);
+  volume.gain.exponentialRampToValueAtTime(boostedGain, audio.currentTime + 0.01);
   volume.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + duration);
   oscillator.connect(volume).connect(audio.destination);
   oscillator.start();
   oscillator.stop(audio.currentTime + duration + 0.02);
 }
 
-function drawWheel(rotation = currentRotation) {
+function wrapIndex(index) {
+  return ((index % reelTopics.length) + reelTopics.length) % reelTopics.length;
+}
+
+function topicAtPosition(position) {
+  return reelTopics[wrapIndex(Math.round(position))];
+}
+
+function fitText(text, maxWidth, baseSize) {
+  let size = baseSize;
+  ctx.font = `900 ${size}px Yu Gothic, Meiryo, sans-serif`;
+  while (ctx.measureText(text).width > maxWidth && size > 20) {
+    size -= 2;
+    ctx.font = `900 ${size}px Yu Gothic, Meiryo, sans-serif`;
+  }
+  return size;
+}
+
+function drawSlot(position = reelPosition) {
   const { width, height } = canvas;
-  const radius = width / 2;
-  const center = radius;
-  const visible = 32;
-  const slice = (Math.PI * 2) / visible;
-  const offset = rotation - Math.PI / 2;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const rowHeight = height / 7.2;
+  const base = Math.round(position);
+  const drift = position - base;
 
   ctx.clearRect(0, 0, width, height);
 
-  for (let i = 0; i < visible; i += 1) {
-    const topic = wheelTopics[i % wheelTopics.length].title;
-    const start = offset + i * slice;
-    const end = start + slice;
-    ctx.beginPath();
-    ctx.moveTo(center, center);
-    ctx.arc(center, center, radius - 8, start, end);
-    ctx.closePath();
-    ctx.fillStyle = palette[i % palette.length];
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255, 255, 255, .78)";
-    ctx.lineWidth = 3;
-    ctx.stroke();
+  const background = ctx.createLinearGradient(0, 0, 0, height);
+  background.addColorStop(0, "#25313d");
+  background.addColorStop(0.18, "#f7f0df");
+  background.addColorStop(0.5, "#fffdf7");
+  background.addColorStop(0.82, "#e5ebe5");
+  background.addColorStop(1, "#18232d");
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.save();
+  ctx.translate(centerX, centerY);
+  for (let row = -5; row <= 5; row += 1) {
+    const distance = row - drift;
+    const y = distance * rowHeight;
+    const depth = Math.min(Math.abs(distance) / 5, 1);
+    const scale = 1 - depth * 0.34;
+    const alpha = 1 - depth * 0.66;
+    const topic = reelTopics[wrapIndex(base + row)];
+    const cardWidth = width * (0.82 - depth * 0.22);
+    const cardHeight = rowHeight * (0.78 - depth * 0.14);
+    const x = -cardWidth / 2 + depth * 52;
+    const radius = 8;
 
     ctx.save();
-    ctx.translate(center, center);
-    ctx.rotate(start + slice / 2);
-    ctx.textAlign = "right";
-    ctx.fillStyle = "#fff";
-    ctx.font = "700 18px Yu Gothic, Meiryo, sans-serif";
-    const label = topic.length > 13 ? `${topic.slice(0, 12)}…` : topic;
-    ctx.fillText(label, radius - 34, 7);
+    ctx.translate(0, y);
+    ctx.scale(scale, scale);
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = row === 0 ? "#fffdf7" : palette[wrapIndex(base + row) % palette.length];
+    ctx.strokeStyle = row === 0 ? "#e94f37" : "rgba(255, 255, 255, .72)";
+    ctx.lineWidth = row === 0 ? 5 : 2;
+    ctx.beginPath();
+    ctx.roundRect(x, -cardHeight / 2, cardWidth, cardHeight, radius);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = row === 0 ? "#17202a" : "#fff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const maxText = cardWidth - 44;
+    const fontSize = fitText(topic.title, maxText, row === 0 ? 42 : 28);
+    ctx.font = `900 ${fontSize}px Yu Gothic, Meiryo, sans-serif`;
+    ctx.fillText(topic.title, 0, 0);
     ctx.restore();
   }
+  ctx.restore();
 
+  ctx.fillStyle = "rgba(233, 79, 55, .18)";
+  ctx.fillRect(0, centerY - rowHeight * .45, width, rowHeight * .9);
+  ctx.strokeStyle = "#e94f37";
+  ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.arc(center, center, radius - 8, 0, Math.PI * 2);
-  ctx.lineWidth = 12;
-  ctx.strokeStyle = "#fffdf7";
+  ctx.moveTo(0, centerY);
+  ctx.lineTo(width, centerY);
   ctx.stroke();
+
+  const shine = ctx.createLinearGradient(0, 0, width, 0);
+  shine.addColorStop(0, "rgba(255, 255, 255, .08)");
+  shine.addColorStop(0.5, "rgba(255, 255, 255, .34)");
+  shine.addColorStop(1, "rgba(255, 255, 255, .06)");
+  ctx.fillStyle = shine;
+  ctx.fillRect(0, 0, width, height);
 }
 
 function shuffleTopics() {
-  for (let i = topics.length - 1; i > 0; i -= 1) {
+  for (let i = reelTopics.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
-    [topics[i], topics[j]] = [topics[j], topics[i]];
+    [reelTopics[i], reelTopics[j]] = [reelTopics[j], reelTopics[i]];
   }
-  wheelTopics = topics.slice(0, 32);
-  drawWheel();
+  reelPosition = 0;
+  drawSlot();
+  setResult(topicAtPosition(reelPosition));
 }
 
 function easeOutCubic(t) {
@@ -359,7 +411,7 @@ function setResult(topic) {
   currentTopic = topic;
   result.textContent = topic.title;
   resultMeta.textContent = topic.source === "official"
-    ? "公式アーカイブ由来のお題です。"
+    ? "公開アーカイブ由来のお題です。"
     : "250件にするために追加したブログ向けお題です。";
 }
 
@@ -368,32 +420,28 @@ function spin() {
   spinning = true;
   spinButton.disabled = true;
   result.textContent = "抽選中...";
-  resultMeta.textContent = "止まるまで少し待ってください。";
+  resultMeta.textContent = "中央の赤いラインが指したお題で止まります。";
 
-  const targetIndex = Math.floor(Math.random() * topics.length);
-  const extraTurns = 7 + Math.random() * 4;
-  const visible = 32;
-  const slice = (Math.PI * 2) / visible;
-  const targetVisibleIndex = Math.floor(Math.random() * visible);
-  wheelTopics = topics.slice(0, visible);
-  wheelTopics[targetVisibleIndex] = topics[targetIndex];
-  const targetAngle = (Math.PI * 2) - targetVisibleIndex * slice;
-  const start = currentRotation;
-  const end = currentRotation + extraTurns * Math.PI * 2 + targetAngle;
+  const targetIndex = Math.floor(Math.random() * reelTopics.length);
+  const start = reelPosition;
+  const startWhole = Math.round(start);
+  const loops = 3 + Math.floor(Math.random() * 3);
+  const delta = wrapIndex(targetIndex - startWhole);
+  const end = startWhole + loops * reelTopics.length + delta;
   const duration = 4200 + Math.random() * 900;
   const startedAt = performance.now();
-  let lastTick = 0;
+  let lastTick = Math.round(start);
 
   beep(440, 0.12, 0.08, "triangle");
 
   function frame(now) {
     const progress = Math.min((now - startedAt) / duration, 1);
     const eased = easeOutCubic(progress);
-    currentRotation = start + (end - start) * eased;
-    drawWheel(currentRotation);
+    reelPosition = start + (end - start) * eased;
+    drawSlot(reelPosition);
 
-    const tick = Math.floor(currentRotation / slice);
-    if (tick !== lastTick && progress < 0.92) {
+    const tick = Math.round(reelPosition);
+    if (tick !== lastTick && progress < 0.96) {
       lastTick = tick;
       beep(700 + (tick % 8) * 25, 0.025, 0.035, "square");
     }
@@ -403,10 +451,12 @@ function spin() {
       return;
     }
 
-    currentRotation %= Math.PI * 2;
+    reelPosition = end % reelTopics.length;
+    drawSlot(reelPosition);
+    const selected = topicAtPosition(reelPosition);
     spinning = false;
     spinButton.disabled = false;
-    setResult(topics[targetIndex]);
+    setResult(selected);
     beep(523.25, 0.1, 0.08, "triangle");
     setTimeout(() => beep(659.25, 0.12, 0.08, "triangle"), 110);
     setTimeout(() => beep(783.99, 0.18, 0.08, "triangle"), 230);
@@ -426,8 +476,7 @@ copyButton.addEventListener("click", async () => {
 
 reshuffleButton.addEventListener("click", () => {
   shuffleTopics();
-  result.textContent = "候補を更新しました";
-  resultMeta.textContent = "次の抽選で並び順が変わります。";
+  resultMeta.textContent = "候補を更新しました。中央の赤いラインが指しているお題です。";
   beep(392, 0.08, 0.05, "triangle");
 });
 
