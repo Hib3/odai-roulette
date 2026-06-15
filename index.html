@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ブログのお題ルーレット</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="stage" aria-labelledby="app-title">
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">Hatena Blog Odai</p>
+            <h1 id="app-title">ブログのお題ルーレット</h1>
+          </div>
+          <div class="counter" aria-label="お題数">
+            <span id="topic-count">250</span>
+            <small>topics</small>
+          </div>
+        </div>
+
+        <div class="roulette-layout">
+          <div class="wheel-wrap" aria-label="お題ルーレット">
+            <div class="pointer" aria-hidden="true"></div>
+            <canvas id="wheel" width="720" height="720"></canvas>
+            <button id="spin-button" class="spin-button" type="button">
+              <span>SPIN</span>
+            </button>
+          </div>
+
+          <aside class="result-panel" aria-live="polite">
+            <p class="panel-label">今回のお題</p>
+            <h2 id="result">クリックで抽選</h2>
+            <p id="result-meta">音あり・アニメーションありで回ります。</p>
+            <div class="actions">
+              <button id="copy-button" type="button">コピー</button>
+              <button id="reshuffle-button" type="button">候補更新</button>
+              <button id="sound-button" type="button" aria-pressed="true">音 ON</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
