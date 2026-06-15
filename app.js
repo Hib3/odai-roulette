@@ -483,7 +483,7 @@ function drawSlot(position = reelPosition) {
   ctx.fillRect(0, 0, width, height);
 
   if (reelFrameReady) {
-    ctx.globalAlpha = .12;
+    ctx.globalAlpha = .06;
     ctx.drawImage(reelFrameImage, 0, 0, width, height);
     ctx.globalAlpha = 1;
   }

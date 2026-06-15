@@ -85,7 +85,7 @@ button {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 28px;
+  padding: 18px 28px 28px;
 }
 
 .stage {
@@ -93,7 +93,7 @@ button {
 }
 
 .topbar {
-  display: flex;
+  display: none;
   align-items: end;
   justify-content: space-between;
   gap: 24px;
@@ -142,16 +142,16 @@ h1 {
 
 .roulette-layout {
   display: grid;
-  grid-template-columns: minmax(520px, 820px) minmax(320px, 1fr);
+  grid-template-columns: minmax(720px, 1fr) minmax(300px, 380px);
   gap: 34px;
   align-items: center;
 }
 
 .wheel-wrap {
   position: relative;
-  width: min(80vh, 100%);
-  max-width: 820px;
-  aspect-ratio: 1.12;
+  width: 100%;
+  max-width: 1040px;
+  aspect-ratio: 1.817;
   margin: 0 auto;
   border: 1px solid rgba(255, 255, 255, .7);
   border-radius: 8px;
@@ -174,19 +174,19 @@ h1 {
 .reel-art-frame {
   position: absolute;
   inset: -3px;
-  z-index: 3;
+  z-index: 2;
   border-radius: 8px;
   background: url("assets/reel-frame-art.png") center / cover no-repeat;
-  opacity: .38;
-  mix-blend-mode: screen;
+  opacity: .92;
+  mix-blend-mode: normal;
   pointer-events: none;
-  filter: saturate(1.28) contrast(1.05);
+  filter: saturate(1.18) contrast(1.08) brightness(1.05);
 }
 
 .wheel-wrap::before {
   content: "";
   position: absolute;
-  inset: 18px;
+  inset: 10px;
   z-index: 1;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, .58);
@@ -215,9 +215,10 @@ body.jackpot .wheel-wrap {
 
 canvas {
   position: relative;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
+  z-index: 3;
+  width: 70%;
+  height: 62%;
+  margin: 10.8% auto 0;
   display: block;
   border-radius: 8px;
   background: transparent;
@@ -251,10 +252,10 @@ body.jackpot .light-rig {
 .pointer {
   position: absolute;
   top: 50%;
-  left: 12px;
+  left: 12.5%;
   z-index: 5;
-  width: 70px;
-  height: 92px;
+  width: 58px;
+  height: 76px;
   transform: translateY(-50%);
   clip-path: polygon(100% 50%, 0 0, 0 100%);
   background: linear-gradient(145deg, #fff1a6, #ff2d24 52%, #a80012);
@@ -270,11 +271,11 @@ body.jackpot .pointer {
 
 .spin-button {
   position: absolute;
-  right: 30px;
-  bottom: 30px;
+  right: -12px;
+  bottom: -18px;
   z-index: 6;
-  width: 132px;
-  height: 132px;
+  width: 144px;
+  height: 144px;
   border: 0;
   border-radius: 50%;
   color: #fff;
@@ -295,7 +296,7 @@ body.jackpot .pointer {
 }
 
 .spin-button span {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 900;
   text-shadow: 0 2px 0 rgba(0, 0, 0, .32), 0 0 12px rgba(255, 255, 255, .8);
 }
@@ -330,6 +331,10 @@ body.jackpot .pointer {
 h2 {
   min-height: 4.2em;
   margin: 0;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .74);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.92), 0 8px 20px rgba(0,0,0,.08);
   font-size: clamp(28px, 3vw, 46px);
   line-height: 1.18;
   overflow-wrap: anywhere;
@@ -343,8 +348,12 @@ body.jackpot h2 {
 #result-meta {
   min-height: 3em;
   margin: 18px 0 24px;
-  color: var(--muted);
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .62);
+  color: #374151;
   line-height: 1.7;
+  text-shadow: 0 1px 0 rgba(255,255,255,.8);
 }
 
 .actions {
@@ -376,7 +385,7 @@ body.jackpot h2 {
 
 @media (max-width: 900px) {
   .app-shell {
-    padding: 20px;
+    padding: 16px 10px 24px;
   }
 
   .topbar,
@@ -396,20 +405,20 @@ body.jackpot h2 {
   }
 
   .wheel-wrap {
-    width: min(90vw, 620px);
+    width: min(98vw, 720px);
   }
 
   .spin-button {
     width: 96px;
     height: 96px;
-    right: 20px;
-    bottom: 20px;
+    right: -4px;
+    bottom: -8px;
   }
 
   .pointer {
-    left: 10px;
-    width: 54px;
-    height: 72px;
+    left: 17%;
+    width: 42px;
+    height: 58px;
   }
 }
 
