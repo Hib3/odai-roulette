@@ -278,6 +278,13 @@ let soundEnabled = true;
 let audioContext = null;
 let flashPower = 0;
 let particles = [];
+const reelFrameImage = new Image();
+let reelFrameReady = false;
+reelFrameImage.onload = () => {
+  reelFrameReady = true;
+  drawSlot();
+};
+reelFrameImage.src = "assets/reel-frame-art.png";
 
 topicCount.textContent = String(topics.length);
 
@@ -474,6 +481,12 @@ function drawSlot(position = reelPosition) {
   shine.addColorStop(1, "rgba(255, 255, 255, .06)");
   ctx.fillStyle = shine;
   ctx.fillRect(0, 0, width, height);
+
+  if (reelFrameReady) {
+    ctx.globalAlpha = .12;
+    ctx.drawImage(reelFrameImage, 0, 0, width, height);
+    ctx.globalAlpha = 1;
+  }
 
   if (flashPower > 0) {
     ctx.globalAlpha = flashPower;
