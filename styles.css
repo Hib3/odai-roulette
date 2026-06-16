@@ -148,10 +148,10 @@ h1 {
 }
 
 .wheel-wrap {
-  --screen-left: 18.8%;
-  --screen-top: 24.8%;
-  --screen-width: 62.4%;
-  --screen-height: 41.3%;
+  --screen-left: 13.2%;
+  --screen-top: 18%;
+  --screen-width: 73.6%;
+  --screen-height: 56%;
   position: relative;
   box-sizing: border-box;
   width: 100%;
