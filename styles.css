@@ -162,7 +162,7 @@ h1 {
   border: 1px solid rgba(255, 255, 255, .76);
   border-radius: 8px;
   background:
-    url("assets/metal-pachinko-bg.png") center / cover no-repeat,
+    url("assets/reel-frame-art.png") center / cover no-repeat,
     linear-gradient(145deg, #f7f9fb 0%, #929ba9 46%, #f7f9fc 100%);
   box-shadow:
     var(--shadow),
@@ -237,7 +237,7 @@ canvas {
   margin: 0;
   display: block;
   border-radius: 8px;
-  background: #edf1f4;
+  background: transparent;
 }
 
 .light-rig {

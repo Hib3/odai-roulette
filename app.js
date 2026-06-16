@@ -385,32 +385,14 @@ function drawSlot(position = reelPosition) {
 
   ctx.clearRect(0, 0, width, height);
 
-  const background = ctx.createLinearGradient(0, 0, width, height);
-  background.addColorStop(0, "#111721");
-  background.addColorStop(0.18, "#e8edf3");
-  background.addColorStop(0.34, "#8f98a7");
-  background.addColorStop(0.5, "#fffdf7");
-  background.addColorStop(0.66, "#aeb6c3");
-  background.addColorStop(0.82, "#f3f6f8");
-  background.addColorStop(1, "#10151f");
-  ctx.fillStyle = background;
-  ctx.fillRect(0, 0, width, height);
-
-  ctx.fillStyle = "rgba(0, 0, 0, .18)";
+  ctx.fillStyle = "rgba(255, 255, 255, .2)";
   for (let y = 24; y < height; y += 22) {
     for (let x = 28 + ((y / 22) % 2) * 10; x < width; x += 22) {
       ctx.beginPath();
-      ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+      ctx.arc(x, y, 1.6, 0, Math.PI * 2);
       ctx.fill();
     }
   }
-
-  const tunnel = ctx.createRadialGradient(centerX, centerY, height * 0.08, centerX, centerY, height * 0.68);
-  tunnel.addColorStop(0, "rgba(255, 255, 255, .48)");
-  tunnel.addColorStop(0.46, "rgba(255, 255, 255, .04)");
-  tunnel.addColorStop(1, "rgba(0, 0, 0, .5)");
-  ctx.fillStyle = tunnel;
-  ctx.fillRect(0, 0, width, height);
 
   ctx.save();
   ctx.translate(centerX, centerY);
@@ -421,9 +403,9 @@ function drawSlot(position = reelPosition) {
     const scale = 1 - depth * 0.38;
     const alpha = 1 - depth * 0.58;
     const topic = reelTopics[wrapIndex(base + row)];
-    const cardWidth = width * (0.78 - depth * 0.24);
-    const cardHeight = rowHeight * (0.8 - depth * 0.12);
-    const x = -cardWidth / 2 + depth * 70;
+    const cardWidth = width * (0.72 - depth * 0.18);
+    const cardHeight = rowHeight * (0.68 - depth * 0.1);
+    const x = -cardWidth / 2 + depth * 44;
     const radius = 8;
 
     ctx.save();
@@ -431,14 +413,14 @@ function drawSlot(position = reelPosition) {
     ctx.scale(scale, scale);
     ctx.globalAlpha = alpha;
     const cardGradient = ctx.createLinearGradient(x, -cardHeight / 2, x + cardWidth, cardHeight / 2);
-    cardGradient.addColorStop(0, row === 0 ? "#fff5c7" : palette[wrapIndex(base + row) % palette.length]);
-    cardGradient.addColorStop(0.45, row === 0 ? "#ffffff" : "rgba(255,255,255,.9)");
-    cardGradient.addColorStop(1, row === 0 ? "#ffd64f" : palette[wrapIndex(base + row + 3) % palette.length]);
+    cardGradient.addColorStop(0, row === 0 ? "rgba(255, 245, 199, .9)" : `${palette[wrapIndex(base + row) % palette.length]}cc`);
+    cardGradient.addColorStop(0.45, row === 0 ? "rgba(255, 255, 255, .88)" : "rgba(255,255,255,.72)");
+    cardGradient.addColorStop(1, row === 0 ? "rgba(255, 214, 79, .9)" : `${palette[wrapIndex(base + row + 3) % palette.length]}cc`);
     ctx.fillStyle = cardGradient;
     ctx.strokeStyle = row === 0 ? "#ff2d24" : "rgba(255, 255, 255, .84)";
     ctx.lineWidth = row === 0 ? 6 : 2;
     ctx.shadowColor = row === 0 ? "rgba(255, 45, 36, .82)" : "rgba(0, 0, 0, .2)";
-    ctx.shadowBlur = row === 0 ? 28 : 8;
+    ctx.shadowBlur = row === 0 ? 18 : 5;
     ctx.beginPath();
     ctx.roundRect(x, -cardHeight / 2, cardWidth, cardHeight, radius);
     ctx.fill();
@@ -448,10 +430,10 @@ function drawSlot(position = reelPosition) {
     ctx.fillStyle = row === 0 ? "#090d14" : "#23303d";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    const maxText = cardWidth - 44;
+    const maxText = cardWidth - 36;
     const baseFontSize = row === 0
-      ? Math.min(30, Math.max(12, rowHeight * 0.86))
-      : Math.min(20, Math.max(10, rowHeight * 0.68));
+      ? Math.min(28, Math.max(12, rowHeight * 0.72))
+      : Math.min(18, Math.max(10, rowHeight * 0.56));
     const fontSize = fitText(topic.title, maxText, baseFontSize);
     ctx.font = `900 ${fontSize}px Yu Gothic, Meiryo, sans-serif`;
     ctx.shadowColor = row === 0 ? "rgba(255,255,255,.95)" : "rgba(255,255,255,.86)";
@@ -463,10 +445,10 @@ function drawSlot(position = reelPosition) {
 
   ctx.shadowColor = "rgba(255, 45, 36, .9)";
   ctx.shadowBlur = 18;
-  ctx.fillStyle = "rgba(255, 45, 36, .2)";
-  ctx.fillRect(0, centerY - rowHeight * .45, width, rowHeight * .9);
+  ctx.fillStyle = "rgba(255, 45, 36, .12)";
+  ctx.fillRect(0, centerY - rowHeight * .34, width, rowHeight * .68);
   ctx.strokeStyle = "#ff2d24";
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.moveTo(0, centerY);
   ctx.lineTo(width, centerY);
@@ -480,26 +462,11 @@ function drawSlot(position = reelPosition) {
     ctx.shadowColor = ctx.fillStyle;
     ctx.shadowBlur = 18;
     ctx.beginPath();
-    ctx.arc(bulbX, 34, 7, 0, Math.PI * 2);
-    ctx.arc(bulbX, height - 34, 7, 0, Math.PI * 2);
+    ctx.arc(bulbX, 34, 6, 0, Math.PI * 2);
+    ctx.arc(bulbX, height - 34, 6, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.shadowBlur = 0;
-
-  const shine = ctx.createLinearGradient(0, 0, width, 0);
-  shine.addColorStop(0, "rgba(255, 255, 255, .04)");
-  shine.addColorStop(0.42, "rgba(255, 255, 255, .26)");
-  shine.addColorStop(0.52, "rgba(255, 255, 255, .08)");
-  shine.addColorStop(0.7, "rgba(255, 255, 255, .18)");
-  shine.addColorStop(1, "rgba(255, 255, 255, .06)");
-  ctx.fillStyle = shine;
-  ctx.fillRect(0, 0, width, height);
-
-  if (reelFrameReady) {
-    ctx.globalAlpha = .06;
-    ctx.drawImage(reelFrameImage, 0, 0, width, height);
-    ctx.globalAlpha = 1;
-  }
 
   if (flashPower > 0) {
     ctx.globalAlpha = flashPower;
