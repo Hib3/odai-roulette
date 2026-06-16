@@ -148,10 +148,10 @@ h1 {
 }
 
 .wheel-wrap {
-  --screen-left: 13.2%;
-  --screen-top: 22.2%;
-  --screen-width: 73.6%;
-  --screen-height: 57.6%;
+  --screen-left: 18.8%;
+  --screen-top: 24.8%;
+  --screen-width: 62.4%;
+  --screen-height: 41.3%;
   position: relative;
   box-sizing: border-box;
   width: 100%;
@@ -216,7 +216,28 @@ h1 {
 }
 
 body.jackpot .wheel-wrap {
-  animation: cabinetRapture 900ms ease-out;
+  animation: cabinetRapture 520ms ease-in-out infinite;
+}
+
+body.jackpot .stage {
+  animation: stageShake 180ms linear infinite;
+}
+
+body.jackpot .reel-art-frame {
+  filter:
+    brightness(1.24)
+    saturate(1.45)
+    drop-shadow(0 0 18px rgba(255, 45, 36, .95))
+    drop-shadow(0 0 34px rgba(255, 212, 71, .85));
+}
+
+body.jackpot .reel-screen {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .68),
+    inset 0 0 0 6px rgba(255, 45, 36, .22),
+    inset 0 0 42px rgba(255, 212, 71, .32),
+    0 0 26px rgba(255, 45, 36, .75),
+    0 0 48px rgba(255, 212, 71, .52);
 }
 
 canvas {
@@ -253,13 +274,17 @@ canvas {
 
 body.jackpot .light-rig {
   animation: lightChase 220ms linear infinite;
-  filter: drop-shadow(0 0 16px rgba(255, 45, 36, 1)) drop-shadow(0 0 24px rgba(255, 212, 71, .9));
+  opacity: .96;
+  filter:
+    drop-shadow(0 0 18px rgba(255, 45, 36, 1))
+    drop-shadow(0 0 30px rgba(255, 212, 71, .98))
+    drop-shadow(0 0 44px rgba(55, 230, 255, .72));
 }
 
 .pointer {
   position: absolute;
-  top: 51%;
-  left: 9.8%;
+  top: 45.5%;
+  left: 13.8%;
   z-index: 5;
   width: 46px;
   height: 62px;
@@ -446,20 +471,31 @@ body.jackpot h2 {
 }
 
 @keyframes blissBurst {
-  0% { opacity: 0; transform: scale(.22) rotate(0deg); }
-  14% { opacity: .98; transform: scale(1.1) rotate(16deg); }
-  100% { opacity: 0; transform: scale(2.8) rotate(70deg); }
+  0% { opacity: 0; transform: scale(.18) rotate(0deg); filter: saturate(1); }
+  12% { opacity: 1; transform: scale(1.18) rotate(22deg); filter: saturate(2.4) brightness(1.4); }
+  100% { opacity: 0; transform: scale(3.4) rotate(92deg); filter: saturate(2) brightness(1.15); }
 }
 
 @keyframes cabinetRapture {
-  0% { transform: scale(1); }
-  20% { transform: scale(1.025) rotate(.2deg); }
-  40% { transform: scale(1.01) rotate(-.15deg); }
-  100% { transform: scale(1); }
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  18% { transform: translate(3px, -2px) scale(1.02) rotate(.28deg); }
+  36% { transform: translate(-3px, 2px) scale(1.012) rotate(-.24deg); }
+  58% { transform: translate(2px, 2px) scale(1.026) rotate(.18deg); }
+  78% { transform: translate(-2px, -1px) scale(1.01) rotate(-.2deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(0deg); }
 }
 
 @keyframes lightChase {
-  to { background-position: 44px 0; }
+  to { background-position: 88px 0; }
+}
+
+@keyframes stageShake {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(2px, -1px); }
+  40% { transform: translate(-2px, 1px); }
+  60% { transform: translate(1px, 2px); }
+  80% { transform: translate(-1px, -2px); }
+  100% { transform: translate(0, 0); }
 }
 
 @keyframes pointerPulse {
