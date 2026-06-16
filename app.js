@@ -417,10 +417,10 @@ function drawSlot(position = reelPosition) {
     cardGradient.addColorStop(0.45, row === 0 ? "rgba(255, 255, 255, .88)" : "rgba(255,255,255,.72)");
     cardGradient.addColorStop(1, row === 0 ? "rgba(255, 214, 79, .9)" : `${palette[wrapIndex(base + row + 3) % palette.length]}cc`);
     ctx.fillStyle = cardGradient;
-    ctx.strokeStyle = row === 0 ? "#ff2d24" : "rgba(255, 255, 255, .84)";
-    ctx.lineWidth = row === 0 ? 6 : 2;
-    ctx.shadowColor = row === 0 ? "rgba(255, 45, 36, .82)" : "rgba(0, 0, 0, .2)";
-    ctx.shadowBlur = row === 0 ? 18 : 5;
+    ctx.strokeStyle = row === 0 ? "rgba(255, 226, 120, .95)" : "rgba(255, 255, 255, .84)";
+    ctx.lineWidth = row === 0 ? 4 : 2;
+    ctx.shadowColor = row === 0 ? "rgba(255, 226, 120, .72)" : "rgba(0, 0, 0, .2)";
+    ctx.shadowBlur = row === 0 ? 12 : 5;
     ctx.beginPath();
     ctx.roundRect(x, -cardHeight / 2, cardWidth, cardHeight, radius);
     ctx.fill();
@@ -443,12 +443,10 @@ function drawSlot(position = reelPosition) {
   }
   ctx.restore();
 
-  ctx.shadowColor = "rgba(255, 45, 36, .9)";
-  ctx.shadowBlur = 18;
-  ctx.fillStyle = "rgba(255, 45, 36, .12)";
-  ctx.fillRect(0, centerY - rowHeight * .34, width, rowHeight * .68);
-  ctx.strokeStyle = "#ff2d24";
-  ctx.lineWidth = 4;
+  ctx.shadowColor = "rgba(255, 226, 120, .72)";
+  ctx.shadowBlur = 10;
+  ctx.strokeStyle = "rgba(255, 226, 120, .82)";
+  ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(0, centerY);
   ctx.lineTo(width, centerY);
