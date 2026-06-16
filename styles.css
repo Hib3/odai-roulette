@@ -148,74 +148,69 @@ h1 {
 }
 
 .wheel-wrap {
+  --screen-left: 13.2%;
+  --screen-top: 22.2%;
+  --screen-width: 73.6%;
+  --screen-height: 57.6%;
   position: relative;
   box-sizing: border-box;
   width: 100%;
   max-width: 1040px;
   aspect-ratio: 1.817;
   margin: 0 auto;
-  border: 1px solid rgba(255, 255, 255, .7);
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, .76);
   border-radius: 8px;
   background:
-    linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)),
-    url("assets/reel-frame-art.png") center / cover no-repeat,
     url("assets/metal-pachinko-bg.png") center / cover no-repeat,
-    radial-gradient(circle at 30% 15%, rgba(255, 255, 255, .96), transparent 26%),
-    repeating-radial-gradient(circle at 0 0, rgba(0, 0, 0, .34) 0 2px, transparent 3px 15px),
-    linear-gradient(145deg, #f7f9fb 0%, #a9b1bd 32%, #f7f9fc 48%, #747d8b 100%);
+    linear-gradient(145deg, #f7f9fb 0%, #929ba9 46%, #f7f9fc 100%);
   box-shadow:
     var(--shadow),
-    inset 0 1px 0 rgba(255, 255, 255, .96),
-    inset 0 -28px 50px rgba(0, 0, 0, .32),
-    inset 0 0 0 10px rgba(255, 255, 255, .28),
-    inset 0 0 0 18px rgba(22, 28, 38, .2);
+    inset 0 1px 0 rgba(255, 255, 255, .9);
   overflow: hidden;
 }
 
 .reel-art-frame {
   position: absolute;
   inset: 0;
-  z-index: 5;
+  z-index: 3;
   border-radius: 8px;
-  background: url("assets/reel-frame-art.png") center / cover no-repeat;
-  opacity: .98;
-  mix-blend-mode: normal;
+  background: url("assets/reel-frame-shell.png") center / cover no-repeat;
   pointer-events: none;
-  filter: saturate(1.18) contrast(1.08) brightness(1.05);
-  box-sizing: border-box;
-  padding: 8.5% 9%;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
 }
 
 .wheel-wrap::before {
-  content: "";
-  position: absolute;
-  inset: 10px;
-  z-index: 1;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, .58);
-  box-shadow:
-    inset 0 0 0 6px rgba(0, 0, 0, .16),
-    inset 0 22px 30px rgba(255, 255, 255, .32),
-    inset 0 -28px 40px rgba(0, 0, 0, .34);
-  pointer-events: none;
+  content: none;
 }
 
 .wheel-wrap::after {
+  content: none;
+}
+
+.reel-screen {
+  position: absolute;
+  left: var(--screen-left);
+  top: var(--screen-top);
+  width: var(--screen-width);
+  height: var(--screen-height);
+  z-index: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(236, 241, 244, .9);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .5),
+    inset 0 0 0 6px rgba(0, 0, 0, .18),
+    0 16px 28px rgba(0, 0, 0, .28);
+}
+
+.reel-screen::after {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   background:
-    linear-gradient(110deg, transparent 0 28%, rgba(255, 255, 255, .28) 35%, transparent 43% 100%),
-    radial-gradient(circle at 82% 24%, rgba(255, 255, 255, .28), transparent 16%);
+    linear-gradient(110deg, transparent 0 24%, rgba(255, 255, 255, .28) 34%, transparent 45% 100%),
+    linear-gradient(rgba(255, 255, 255, .08), rgba(0, 0, 0, .08));
   mix-blend-mode: screen;
   pointer-events: none;
 }
@@ -226,22 +221,21 @@ body.jackpot .wheel-wrap {
 
 canvas {
   position: absolute;
-  z-index: 3;
-  left: 18%;
-  top: 24%;
-  width: 64%;
-  height: 42%;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   margin: 0;
   display: block;
   border-radius: 8px;
-  background: transparent;
+  background: #edf1f4;
 }
 
 .light-rig {
   position: absolute;
   left: 34px;
   right: 34px;
-  z-index: 2;
+  z-index: 4;
   height: 18px;
   background:
     radial-gradient(circle, #fff 0 16%, #fff7ad 17% 31%, #ff2537 32% 43%, transparent 44%) 0 0 / 44px 18px repeat-x;
@@ -264,9 +258,9 @@ body.jackpot .light-rig {
 
 .pointer {
   position: absolute;
-  top: 45%;
-  left: 13.6%;
-  z-index: 6;
+  top: 51%;
+  left: 9.8%;
+  z-index: 5;
   width: 46px;
   height: 62px;
   transform: translateY(-50%);
@@ -286,7 +280,7 @@ body.jackpot .pointer {
   position: absolute;
   right: 4.2%;
   bottom: 7.8%;
-  z-index: 6;
+  z-index: 5;
   width: 112px;
   height: 112px;
   border: 0;
@@ -396,7 +390,7 @@ body.jackpot h2 {
   transform: translateY(-1px);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1120px) {
   .app-shell {
     padding: 16px 10px 24px;
   }
@@ -433,8 +427,8 @@ body.jackpot h2 {
   }
 
   .pointer {
-    top: 45%;
-    left: 13.5%;
+    top: 51%;
+    left: 9.8%;
     width: 32px;
     height: 44px;
   }

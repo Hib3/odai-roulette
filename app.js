@@ -330,11 +330,20 @@ function topicAtPosition(position) {
 function fitText(text, maxWidth, baseSize) {
   let size = baseSize;
   ctx.font = `900 ${size}px Yu Gothic, Meiryo, sans-serif`;
-  while (ctx.measureText(text).width > maxWidth && size > 20) {
+  while (ctx.measureText(text).width > maxWidth && size > 10) {
     size -= 2;
     ctx.font = `900 ${size}px Yu Gothic, Meiryo, sans-serif`;
   }
   return size;
+}
+
+function syncCanvasSize() {
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.max(1, Math.round(rect.width));
+  const height = Math.max(1, Math.round(rect.height));
+  if (canvas.width === width && canvas.height === height) return;
+  canvas.width = width;
+  canvas.height = height;
 }
 
 function spawnParticles(count) {
@@ -366,6 +375,7 @@ function drawParticles() {
 }
 
 function drawSlot(position = reelPosition) {
+  syncCanvasSize();
   const { width, height } = canvas;
   const centerX = width / 2;
   const centerY = height / 2;
@@ -439,7 +449,10 @@ function drawSlot(position = reelPosition) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const maxText = cardWidth - 44;
-    const fontSize = fitText(topic.title, maxText, row === 0 ? 42 : 28);
+    const baseFontSize = row === 0
+      ? Math.min(30, Math.max(12, rowHeight * 0.86))
+      : Math.min(20, Math.max(10, rowHeight * 0.68));
+    const fontSize = fitText(topic.title, maxText, baseFontSize);
     ctx.font = `900 ${fontSize}px Yu Gothic, Meiryo, sans-serif`;
     ctx.shadowColor = row === 0 ? "rgba(255,255,255,.95)" : "rgba(255,255,255,.86)";
     ctx.shadowBlur = row === 0 ? 1 : 2;
@@ -594,6 +607,10 @@ soundButton.addEventListener("click", () => {
   soundButton.textContent = soundEnabled ? "音 ON" : "音 OFF";
   soundButton.setAttribute("aria-pressed", String(soundEnabled));
   if (soundEnabled) beep(660, 0.08, 0.05, "sine");
+});
+
+window.addEventListener("resize", () => {
+  drawSlot();
 });
 
 shuffleTopics();
