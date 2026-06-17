@@ -514,10 +514,12 @@ function spin() {
   const delta = wrapIndex(targetIndex - startWhole);
   const end = startWhole + loops * reelTopics.length + delta;
   const duration = 4200 + Math.random() * 900;
+  const chaosDuration = duration / 2;
   const startedAt = performance.now();
   let lastTick = Math.round(start);
 
   fanfare();
+  setTimeout(() => document.body.classList.remove("jackpot"), chaosDuration);
 
   function frame(now) {
     const progress = Math.min((now - startedAt) / duration, 1);
@@ -546,7 +548,6 @@ function spin() {
     flashPower = 0.8;
     spawnParticles(160);
     fanfare();
-    setTimeout(() => document.body.classList.remove("jackpot"), 1600);
   }
 
   requestAnimationFrame(frame);
